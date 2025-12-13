@@ -24,7 +24,7 @@ A modern, full-stack portfolio website built with React, featuring seamless back
 
 ### 📊 SEO & Performance
 - **Automated Sitemap Generation** (sitemap.xml & robots.txt)
-- **Dynamic Meta Tags** with Open Graph and Twitter Cards
+- **Dynamic Meta Tags** with Open Graph and Twitter Cards (React 19 compatible)
 - **Structured Data** for rich search engine snippets
 - **Breadcrumb Navigation** for better UX and SEO
 - **Performance Optimized** with code splitting and lazy loading
@@ -42,7 +42,7 @@ A modern, full-stack portfolio website built with React, featuring seamless back
 - **Vite** - Next-generation frontend build tool
 - **Tailwind CSS 4** - Modern utility-first CSS framework
 - **React Router** - Declarative routing for React
-- **React Helmet Async** - Document head management
+- **Native SEO** - Document head management using native DOM API
 
 ### Animation & UX
 - **GSAP** - Professional-grade animation library
@@ -257,16 +257,42 @@ All components are modular and can be easily customized:
 npm run build
 ```
 
-### Deploy to Firebase (Example)
+### Deploy to Vercel
+The project is configured for Vercel deployment with automatic sitemap generation.
+
+1. **Connect to Vercel**
+   - Connect your GitHub repository to Vercel
+   - Automatic deployments on push to main branch
+
+2. **Environment Variables** 
+   Set the following in Vercel dashboard:
+   ```env
+   VITE_API_BASE_URL=https://your-api-domain.com/api
+   VITE_APP_NAME=Your Portfolio
+   VITE_SITE_URL=https://your-domain.com
+   ```
+
+3. **Domain Configuration**
+   Update `src/config/sitemap.js` with your production domain before deployment.
+
+### Deploy to Firebase (Alternative)
 ```bash
+npm run build
 firebase deploy
 ```
 
-### Environment Setup
-1. Update environment variables for production
-2. Configure your domain in sitemap configuration
-3. Generate sitemap before deployment
-4. Test all routes and functionality
+### Deploy to Netlify (Alternative)
+```bash
+npm run build
+# Upload dist folder to Netlify or use GitHub integration
+```
+
+### Pre-deployment Checklist
+- ✅ Update domain in sitemap configuration
+- ✅ Set production environment variables  
+- ✅ Test build locally: `npm run build`
+- ✅ Verify all routes work: `npm run preview`
+- ✅ Check sitemap generation: `npm run generate-sitemap`
 
 ## 🤝 Contributing
 
@@ -287,6 +313,21 @@ If you encounter any issues:
 1. Check the [Issues](../../issues) page
 2. Create a new issue with detailed description
 3. Include error messages and steps to reproduce
+
+### Common Deployment Issues
+
+**Build Fails with Peer Dependency Conflicts:**
+- This project uses React 19 with native DOM manipulation for SEO instead of react-helmet-async
+- All dependencies are compatible with React 19
+
+**Sitemap Not Generated:**
+```bash
+npm run generate-sitemap
+```
+
+**Environment Variables Not Working:**
+- Ensure all VITE_ prefixed variables are set
+- Check Vercel/hosting platform environment settings
 
 ## 🙏 Acknowledgments
 

@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { HelmetProvider } from 'react-helmet-async';
 
 // Page components
 import AllWork from "./pages/AllWork";
@@ -27,9 +26,8 @@ import LoginForm from "./components/LoginForm";
 export default function App() {
   return (
     <ErrorBoundary>
-      <HelmetProvider>
-        <Router>
-          <Routes>
+      <Router>
+        <Routes>
           {/* Main portfolio page - showcases all sections */}
           <Route 
             path="/" 
@@ -70,7 +68,6 @@ export default function App() {
           } />
         </Routes>
       </Router>
-    </HelmetProvider>
     </ErrorBoundary>
   );
 }
