@@ -12,8 +12,8 @@ import { ROUTES } from '../constants/index.js';
 export const SITE_CONFIG = {
   baseUrl: typeof window !== 'undefined' 
     ? (import.meta?.env?.MODE === 'production' 
-        ? 'https://your-portfolio-domain.com' 
-        : 'http://localhost:5174')
+        ? 'https://subhradip.me/' 
+        : 'http://localhost:5173')
     : 'http://localhost:5174', // Fallback for non-browser environments
   lastModified: new Date().toISOString(),
 };

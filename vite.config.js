@@ -8,4 +8,19 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          animations: ['gsap', 'lenis']
+        }
+      }
+    }
+  },
+  preview: {
+    port: 5174,
+    host: true
+  }
 })

@@ -329,6 +329,12 @@ npm run generate-sitemap
 - Ensure all VITE_ prefixed variables are set
 - Check Vercel/hosting platform environment settings
 
+**Routes Not Working in Production (404 errors):**
+- ✅ `vercel.json` configuration added for client-side routing
+- ✅ `public/_redirects` fallback for other platforms
+- ✅ Catch-all route in App.jsx for unmatched paths
+- All routes (`/`, `/admin`, `/login`, `/all-projects`) should work in production
+
 ## 🙏 Acknowledgments
 
 - **React Team** for the amazing framework

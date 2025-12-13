@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Page Not Found</title>
+    <script>
+        // Redirect to main app with the current path
+        const path = window.location.pathname;
+        window.history.replaceState({}, '', path);
+        window.location.href = '/';
+    </script>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 50px;">
+        <h1>Redirecting...</h1>
+        <p>If you're not automatically redirected, <a href="/">click here</a>.</p>
+    </div>
+</body>
+</html>
