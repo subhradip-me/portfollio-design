@@ -1,11 +1,43 @@
+# Dependencies
 node_modules
+.pnpm-store
+
+# Environment files
 .env
 .env.local
 .env.development
 .env.production
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
 .DS_Store
 *.local
+Thumbs.db
+
+# Build tools
 .vite
-coverage
+dist/
+coverage/
 .nyc_output
+
+# Development files
+src/**/*.test.*
+src/**/*.spec.*
+*.md
+public/seo-meta.html
+
+# Database
+*.sqlite
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

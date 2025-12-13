@@ -14,12 +14,10 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import SEOMetaTags from "./components/SEOMetaTags";
 import ErrorBoundary from "./components/ErrorBoundary";
-import RouteDebugger from "./components/RouteDebugger";
 
 // Authentication and Admin components
 import Admin from "./components/Admin";
 import LoginForm from "./components/LoginForm";
-import AdminTest from "./components/AdminTest";
 
 /**
  * Main App Component
@@ -29,7 +27,6 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <RouteDebugger />
         <Routes>
           {/* Main portfolio page - showcases all sections */}
           <Route 
@@ -58,10 +55,10 @@ export default function App() {
           
           {/* Admin and authentication pages */}
           <Route path="/admin" element={
-            <div>
+            <>
               <SEOMetaTags />
-              <AdminTest />
-            </div>
+              <Admin />
+            </>
           } />
           <Route path="/login" element={
             <>

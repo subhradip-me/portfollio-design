@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { getPageMeta, structuredData, SITE_CONFIG } from '../config/sitemap';
 
 /**
- * SEO Meta Tags Component (React 19 Compatible)
+ * SEO Meta Tags Component - Production Optimized for subhradip.me
  * Dynamically sets page metadata based on current route using native DOM API
  * 
  * @param {Object} props - Component props
  * @param {string} props.title - Override page title
  * @param {string} props.description - Override page description
  * @param {string} props.image - Override OG image
+ * @param {Array} props.keywords - Override keywords
  */
 export default function SEOMetaTags({ 
   title, 
@@ -21,34 +21,46 @@ export default function SEOMetaTags({
   const currentPath = location.pathname;
   
   useEffect(() => {
-    // Get default meta from sitemap config with error handling
-    let defaultMeta;
-    try {
-      defaultMeta = getPageMeta(currentPath);
-    } catch (error) {
-      console.warn('Error getting page meta:', error);
-      // Fallback meta
-      defaultMeta = {
-        title: 'Portfolio',
-        description: 'Professional portfolio website',
-        keywords: ['portfolio', 'web developer'],
-        ogType: 'website',
-        ogImage: '/images/og-default.jpg'
-      };
-    }
+    // Enhanced meta for subhradip.me
+    const defaultMeta = {
+      '/': {
+        title: 'Subhradip Hansda - Full Stack Developer & UI/UX Designer',
+        description: 'Professional portfolio of Subhradip Hansda. Full Stack Developer specializing in React, Node.js, and modern web technologies. Creating innovative digital solutions.',
+        keywords: ['Subhradip Hansda', 'Full Stack Developer', 'React Developer', 'Node.js', 'UI/UX Designer', 'Web Developer', 'JavaScript', 'TypeScript', 'Portfolio'],
+        ogType: 'website'
+      },
+      '/all-projects': {
+        title: 'Projects - Subhradip Hansda',
+        description: 'Explore my latest web development projects including React applications, full-stack solutions, and innovative UI/UX designs.',
+        keywords: ['Web Projects', 'React Projects', 'Full Stack Projects', 'Subhradip Portfolio'],
+        ogType: 'website'
+      },
+      '/admin': {
+        title: 'Admin Dashboard - Subhradip.me',
+        description: 'Admin panel for portfolio management',
+        keywords: ['Admin', 'Dashboard'],
+        ogType: 'website'
+      },
+      '/login': {
+        title: 'Login - Subhradip.me',
+        description: 'Secure login portal',
+        keywords: ['Login', 'Authentication'],
+        ogType: 'website'
+      }
+    };
+
+    // Get page-specific meta
+    const pageMeta = defaultMeta[currentPath] || defaultMeta['/'];
     
-    // Use props or fall back to config
-    const pageTitle = title || defaultMeta?.title || 'Portfolio';
-    const pageDescription = description || defaultMeta?.description || 'Professional portfolio website';
-    const pageImage = image || defaultMeta?.ogImage || '/images/og-default.jpg';
-    const pageKeywords = keywords.length > 0 ? keywords : (defaultMeta?.keywords || ['portfolio', 'web developer']);
+    // Use props or fall back to page meta
+    const pageTitle = title || pageMeta.title;
+    const pageDescription = description || pageMeta.description;
+    const pageImage = image || '/og-image.jpg';
+    const pageKeywords = keywords.length > 0 ? keywords : pageMeta.keywords;
     
     // Construct full URL for canonical and OG tags
-    const canonicalUrl = `${SITE_CONFIG.baseUrl}${currentPath}`;
-    // Only include image URL if image exists and doesn't end with .md
-    const imageUrl = pageImage && !pageImage.endsWith('.md') 
-      ? `${SITE_CONFIG.baseUrl}${pageImage}` 
-      : null;
+    const canonicalUrl = `https://subhradip.me${currentPath}`;
+    const imageUrl = `https://subhradip.me${pageImage}`;
 
     // Update document title
     document.title = pageTitle;
@@ -79,32 +91,41 @@ export default function SEOMetaTags({
       link.setAttribute('href', href);
     };
 
-    // Set basic meta tags
+    // Set basic meta tags with enhanced SEO
     setMetaTag('description', pageDescription);
     setMetaTag('keywords', pageKeywords.join(', '));
-    setMetaTag('robots', defaultMeta?.robots || 'index, follow');
+    setMetaTag('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+    setMetaTag('author', 'Subhradip Chakraborty');
+    setMetaTag('language', 'en');
+    setMetaTag('theme-color', '#000000');
     
-    // Set Open Graph tags
+    // Enhanced Open Graph tags
     setMetaTag('og:title', pageTitle, 'property');
     setMetaTag('og:description', pageDescription, 'property');
-    setMetaTag('og:type', defaultMeta?.ogType || 'website', 'property');
+    setMetaTag('og:type', 'website', 'property');
     setMetaTag('og:url', canonicalUrl, 'property');
-    if (imageUrl) {
-      setMetaTag('og:image', imageUrl, 'property');
-    }
+    setMetaTag('og:site_name', 'Subhradip Chakraborty Portfolio', 'property');
+    setMetaTag('og:locale', 'en_US', 'property');
+    setMetaTag('og:image', imageUrl, 'property');
+    setMetaTag('og:image:width', '1200', 'property');
+    setMetaTag('og:image:height', '630', 'property');
+    setMetaTag('og:image:alt', pageTitle, 'property');
     
-    // Set Twitter Card tags
+    // Enhanced Twitter Card tags
     setMetaTag('twitter:card', 'summary_large_image');
+    setMetaTag('twitter:site', '@subhradip_me');
+    setMetaTag('twitter:creator', '@subhradip_me');
     setMetaTag('twitter:title', pageTitle);
     setMetaTag('twitter:description', pageDescription);
-    if (imageUrl) {
-      setMetaTag('twitter:image', imageUrl);
-    }
+    setMetaTag('twitter:image', imageUrl);
+    setMetaTag('twitter:image:alt', pageTitle);
     
-    // Set canonical URL
+    // Set canonical URL and preconnect for performance
     setLinkTag('canonical', canonicalUrl);
+    setLinkTag('preconnect', 'https://fonts.googleapis.com');
+    setLinkTag('dns-prefetch', 'https://www.google-analytics.com');
 
-    // Set structured data
+    // Enhanced structured data for better search results
     let structuredDataScript = document.querySelector('script[type="application/ld+json"]');
     if (!structuredDataScript) {
       structuredDataScript = document.createElement('script');
@@ -112,19 +133,65 @@ export default function SEOMetaTags({
       document.head.appendChild(structuredDataScript);
     }
     
-    // Update structured data with current page info
-    const pageStructuredData = {
-      ...structuredData,
-      url: canonicalUrl,
-      mainEntity: {
-        "@type": "WebPage",
-        "@id": canonicalUrl,
-        name: pageTitle,
-        description: pageDescription
-      }
+    // Comprehensive structured data for Subhradip Chakraborty
+    const enhancedStructuredData = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Person",
+          "@id": "https://subhradip.me/#person",
+          name: "Subhradip Chakraborty",
+          url: "https://subhradip.me",
+          image: "https://subhradip.me/og-image.jpg",
+          description: "Full Stack Developer specializing in React, Node.js, and modern web technologies",
+          jobTitle: "Full Stack Developer & UI/UX Designer",
+          worksFor: {
+            "@type": "Organization",
+            name: "Freelance"
+          },
+          knowsAbout: ["React", "Node.js", "JavaScript", "TypeScript", "UI/UX Design", "Web Development"],
+          sameAs: [
+            "https://github.com/subhradip-me",
+            "https://linkedin.com/in/subhradip-chakraborty"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://subhradip.me/#website",
+          url: "https://subhradip.me",
+          name: "Subhradip Chakraborty Portfolio",
+          description: "Professional portfolio showcasing full stack development projects and UI/UX designs",
+          publisher: {
+            "@id": "https://subhradip.me/#person"
+          },
+          potentialAction: {
+            "@type": "SearchAction",
+            target: {
+              "@type": "EntryPoint",
+              urlTemplate: "https://subhradip.me/all-projects?search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "@id": canonicalUrl,
+          url: canonicalUrl,
+          name: pageTitle,
+          description: pageDescription,
+          isPartOf: {
+            "@id": "https://subhradip.me/#website"
+          },
+          about: {
+            "@id": "https://subhradip.me/#person"
+          },
+          datePublished: "2024-01-01T00:00:00+00:00",
+          dateModified: new Date().toISOString()
+        }
+      ]
     };
     
-    structuredDataScript.textContent = JSON.stringify(pageStructuredData);
+    structuredDataScript.textContent = JSON.stringify(enhancedStructuredData);
 
     // Cleanup function to remove meta tags when component unmounts
     return () => {

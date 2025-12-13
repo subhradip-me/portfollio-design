@@ -18,11 +18,25 @@ export default defineConfig({
         }
       }
     },
-    outDir: 'dist'
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    },
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 500
   },
   preview: {
     port: 5174,
     host: true
   },
-  base: '/'
+  base: '/',
+  server: {
+    port: 5173,
+    host: true
+  }
 })

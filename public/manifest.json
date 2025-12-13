@@ -1,0 +1,22 @@
+{
+  "name": "Subhradip Chakraborty - Portfolio",
+  "short_name": "Subhradip.me",
+  "description": "Professional portfolio of Subhradip Chakraborty - Full Stack Developer & UI/UX Designer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["portfolio", "developer", "design"],
+  "lang": "en-US",
+  "scope": "/",
+  "id": "subhradip-portfolio"
+}
