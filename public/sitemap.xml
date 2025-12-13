@@ -1,31 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-  
-  <!-- Homepage -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://subhradip.me/</loc>
-    <lastmod>2024-12-14</lastmod>
+    <loc>http://localhost:5174/</loc>
+    <lastmod>2025-12-13T20:30:06.242Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <image:image>
-      <image:loc>https://subhradip.me/og-image.jpg</image:loc>
-      <image:title>Subhradip Chakraborty - Full Stack Developer</image:title>
-      <image:caption>Professional portfolio of Subhradip Chakraborty showcasing full stack development skills</image:caption>
-    </image:image>
+    <priority>1</priority>
   </url>
-  
-  <!-- All Projects Page -->
   <url>
-    <loc>https://subhradip.me/all-projects</loc>
-    <lastmod>2024-12-14</lastmod>
+    <loc>http://localhost:5174/all-projects</loc>
+    <lastmod>2025-12-13T20:30:06.242Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://subhradip.me/og-image.jpg</image:loc>
-      <image:title>Web Development Projects - Subhradip Chakraborty</image:title>
-      <image:caption>Showcase of React, Node.js and full stack development projects</image:caption>
-    </image:image>
   </url>
-
 </urlset>
