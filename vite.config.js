@@ -17,10 +17,12 @@ export default defineConfig({
           animations: ['gsap', 'lenis']
         }
       }
-    }
+    },
+    outDir: 'dist'
   },
   preview: {
     port: 5174,
     host: true
-  }
+  },
+  base: '/'
 })

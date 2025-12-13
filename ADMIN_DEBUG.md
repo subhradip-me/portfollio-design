@@ -62,8 +62,10 @@ Ctrl+Shift+N
 
 Test these URLs after deployment:
 - [ ] `https://your-domain.com/` (should work)
+- [ ] `https://your-domain.com/test` (simple routing test)
+- [ ] `https://your-domain.com/diagnostic` (comprehensive diagnostic)
 - [ ] `https://your-domain.com/admin` (should show test page)
-- [ ] `https://your-domain.com/login` (should work)
+- [ ] `https://https://portfollio-design.vercel.app//login` (should work)
 - [ ] `https://your-domain.com/all-projects` (should work)
 
 ### 6. Next Steps
