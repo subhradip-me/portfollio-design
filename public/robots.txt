@@ -1,0 +1,15 @@
+# Robots.txt for Portfolio Website
+
+User-agent: *
+Allow: /
+Allow: /all-projects
+
+# Disallow admin and authentication pages
+Disallow: /admin
+Disallow: /login
+
+# Sitemap location
+Sitemap: http://localhost:5174/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1
