@@ -14,7 +14,7 @@ export const SITE_CONFIG = {
     ? (import.meta?.env?.MODE === 'production' 
         ? 'https://subhradip.me/' 
         : 'http://localhost:5173')
-    : 'http://localhost:5174', // Fallback for non-browser environments
+    : 'https://subhradip.me/', // Fallback for non-browser environments
   lastModified: new Date().toISOString(),
 };
 
