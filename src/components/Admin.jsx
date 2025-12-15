@@ -17,7 +17,7 @@ export default function Admin() {
   const testimonialsState = useTestimonials()
   
   // Derived state with fallbacks
-  const isAuthenticated = true // TODO: Replace with real auth: authState?.isAuthenticated ?? false
+  const isAuthenticated = authState?.isAuthenticated ?? false
   const projects = projectsState?.projects || []
   const testimonials = testimonialsState?.testimonials || []
   
@@ -53,16 +53,45 @@ export default function Admin() {
   // Show loading while auth is initializing
   if (authState?.loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-xl">Loading...</p>
+      <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
+        {/* Background Elements - matching portfolio theme */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 right-24 w-px h-16 bg-zinc-200"></div>
+          <div className="absolute bottom-32 left-20 w-12 h-px bg-zinc-200"></div>
+          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-zinc-300 rounded-full"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-zinc-100 rounded-full"></div>
+        </div>
+
+        <div className="text-center relative z-10">
+          <div className="mb-8">
+            <h1 className="text-4xl lg:text-5xl font-light text-zinc-900 mb-4 tracking-tight">
+              Loading<span className='text-zinc-400'>.Panel</span>
+            </h1>
+            <div className="flex items-center justify-center space-x-4">
+              <div className="w-8 h-px bg-zinc-200"></div>
+              <div className="w-1 h-1 bg-zinc-300 rounded-full animate-pulse"></div>
+              <div className="w-8 h-px bg-zinc-200"></div>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            {/* Loading Animation */}
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+              <div className="w-2 h-2 bg-zinc-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+            </div>
+            
+            <p className="text-sm text-zinc-500 font-mono tracking-wide">
+              INITIALIZING AUTHENTICATION...
+            </p>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Authentication check
+  // Authentication check - show login if not authenticated
   if (!isAuthenticated) {
     return <LoginForm />
   }
