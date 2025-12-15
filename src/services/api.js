@@ -32,27 +32,9 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  // Add CORS configuration for production
+  // CORS configuration
   withCredentials: false,
 });
-
-// Add request interceptor to log API calls in production
-if (import.meta.env.PROD) {
-  api.interceptors.request.use(
-    (config) => {
-      console.log('Making API request to:', config.baseURL + config.url);
-      const token = localStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      console.error('Request interceptor error:', error);
-      return Promise.reject(error);
-    }
-  );
-}
 
 /**
  * Request interceptor - Automatically adds JWT token to requests
@@ -63,9 +45,20 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Log requests in production for debugging
+    if (import.meta.env.PROD) {
+      console.log('API Request:', {
+        method: config.method,
+        url: config.baseURL + config.url,
+        headers: { ...config.headers, Authorization: token ? '[PRESENT]' : '[MISSING]' }
+      });
+    }
+    
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -75,15 +68,34 @@ api.interceptors.request.use(
  */
 api.interceptors.response.use(
   (response) => {
+    // Log successful responses in production
+    if (import.meta.env.PROD) {
+      console.log('API Response:', {
+        status: response.status,
+        url: response.config.url,
+        data: response.data
+      });
+    }
     return response;
   },
   (error) => {
+    // Enhanced error logging for production debugging
+    if (import.meta.env.PROD) {
+      console.error('API Error:', {
+        message: error.message,
+        status: error.response?.status,
+        url: error.config?.url,
+        responseData: error.response?.data,
+        headers: error.response?.headers
+      });
+    }
+    
     // Handle common errors
     if (error.response?.status === 401) {
       // Unauthorized - remove token and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      window.location.href = '/admin/login';
+      window.location.href = '/login';
     } else if (error.response?.status === 403) {
       console.error('Forbidden: Insufficient permissions');
     } else if (error.response?.status === 429) {
