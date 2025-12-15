@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://portfollio-backend.onrender.com/api';
 
 /**
  * Main Axios instance for API calls
@@ -9,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
  */
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 15000, // Increased timeout for production
   headers: {
     'Content-Type': 'application/json',
   },
@@ -66,7 +66,7 @@ export const handleApiResponse = (response) => {
 export const handleApiError = (error) => {
   if (error.response) {
     // Server responded with error status
-    const errorMessage = error.response.data?.error || 'An error occurred';
+    const errorMessage = error.response.data?.error || error.response.data?.message || 'Authentication failed';
     const errorDetails = error.response.data?.details || [];
     return {
       message: errorMessage,
@@ -74,11 +74,12 @@ export const handleApiError = (error) => {
       status: error.response.status
     };
   } else if (error.request) {
-    // Request made but no response received
+    // Request made but no response received (network error or server down)
     return {
-      message: 'Network error. Please check your connection.',
-      details: [],
-      status: null
+      message: 'Unable to connect to server. Using demo mode.',
+      details: ['Network error', 'Server may be unavailable'],
+      status: null,
+      isNetworkError: true
     };
   } else {
     // Something else happened
