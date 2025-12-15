@@ -73,18 +73,6 @@ const LoginForm = () => {
             </p>
           </div>
           
-          {/* Demo Credentials Info */}
-          <div className="mt-8 p-4 bg-zinc-50 border border-zinc-200 rounded-lg">
-            <div className="flex items-center justify-center space-x-2 mb-3">
-              <div className="w-1 h-1 bg-zinc-400 rounded-full"></div>
-              <span className="text-xs font-mono text-zinc-500 tracking-widest">DEMO ACCESS</span>
-              <div className="w-1 h-1 bg-zinc-400 rounded-full"></div>
-            </div>
-            <div className="space-y-1 text-sm text-zinc-600 font-mono">
-              <div>Email: <span className="text-zinc-800">admin@subhradip.me</span></div>
-              <div>Password: <span className="text-zinc-800">admin123</span></div>
-            </div>
-          </div>
         </div>
         
         {/* Error Display */}
