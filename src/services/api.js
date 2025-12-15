@@ -2,12 +2,12 @@ import axios from 'axios';
 
 // API Configuration - handles both development and production
 const getApiBaseUrl = () => {
-  // In development, use proxy to avoid CORS issues
-  if (import.meta.env.DEV) {
-    return '/api';
+  // In production, always use the full backend URL
+  if (import.meta.env.PROD) {
+    return import.meta.env.VITE_API_BASE_URL || 'https://portfollio-backend-2-85n5.onrender.com/api';
   }
-  // In production, use the direct backend URL
-  return import.meta.env.VITE_API_BASE_URL || 'https://portfollio-backend-2-85n5.onrender.com/api';
+  // In development, use proxy to avoid CORS issues
+  return '/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -16,6 +16,9 @@ const API_BASE_URL = getApiBaseUrl();
 if (import.meta.env.DEV) {
   console.log('API Base URL configured as:', API_BASE_URL);
   console.log('Development mode:', import.meta.env.DEV);
+} else {
+  // Log once in production for debugging
+  console.log('Production API URL:', API_BASE_URL);
 }
 
 /**
@@ -29,9 +32,27 @@ const api = axios.create({
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   },
-  // Add CORS configuration
+  // Add CORS configuration for production
   withCredentials: false,
 });
+
+// Add request interceptor to log API calls in production
+if (import.meta.env.PROD) {
+  api.interceptors.request.use(
+    (config) => {
+      console.log('Making API request to:', config.baseURL + config.url);
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      console.error('Request interceptor error:', error);
+      return Promise.reject(error);
+    }
+  );
+}
 
 /**
  * Request interceptor - Automatically adds JWT token to requests
