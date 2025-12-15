@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "generate-sitemap": "node scripts/generateSitemap.js",
-    "prebuild": "npm run generate-sitemap",
-    "test-routes": "node scripts/test-routes.js"
+    "prebuild": "npm run generate-sitemap"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",

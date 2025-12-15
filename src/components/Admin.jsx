@@ -100,9 +100,7 @@ export default function Admin() {
   const handleDeleteProject = async (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
       const result = await apiActions.deleteProject(id)
-      if (result.success) {
-        console.log('Project deleted successfully')
-      } else {
+      if (!result.success) {
         console.error('Failed to delete project:', result.error)
       }
     }
@@ -111,9 +109,7 @@ export default function Admin() {
   const handleDeleteTestimonial = async (id) => {
     if (window.confirm('Are you sure you want to delete this testimonial?')) {
       const result = await apiActions.deleteTestimonial(id)
-      if (result.success) {
-        console.log('Testimonial deleted successfully')
-      } else {
+      if (!result.success) {
         console.error('Failed to delete testimonial:', result.error)
       }
     }
@@ -132,7 +128,6 @@ export default function Admin() {
       }
       
       if (result.success) {
-        console.log('Project saved successfully')
         setShowProjectForm(false)
       } else {
         console.error('Failed to save project:', result.error)
@@ -160,7 +155,6 @@ export default function Admin() {
       }
       
       if (result.success) {
-        console.log('Testimonial saved successfully')
         setShowTestimonialForm(false)
       } else {
         console.error('Failed to save testimonial:', result.error)
