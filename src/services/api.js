@@ -1,7 +1,22 @@
 import axios from 'axios';
 
-// API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://portfollio-backend.onrender.com/api';
+// API Configuration - handles both development and production
+const getApiBaseUrl = () => {
+  // In development, use proxy to avoid CORS issues
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  // In production, use the direct backend URL
+  return import.meta.env.VITE_API_BASE_URL || 'https://portfollio-backend-2-85n5.onrender.com/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Only log in development
+if (import.meta.env.DEV) {
+  console.log('API Base URL configured as:', API_BASE_URL);
+  console.log('Development mode:', import.meta.env.DEV);
+}
 
 /**
  * Main Axios instance for API calls
@@ -9,10 +24,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://portfollio-ba
  */
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000, // Increased timeout for production
+  timeout: 30000, // Increased timeout for slower connections
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
+  // Add CORS configuration
+  withCredentials: false,
 });
 
 /**
@@ -64,10 +82,13 @@ export const handleApiResponse = (response) => {
 
 // Helper function to handle API errors
 export const handleApiError = (error) => {
+  console.error('API Error details:', error);
+  
   if (error.response) {
     // Server responded with error status
     const errorMessage = error.response.data?.error || error.response.data?.message || 'Authentication failed';
     const errorDetails = error.response.data?.details || [];
+    console.error('Server error response:', error.response.data);
     return {
       message: errorMessage,
       details: errorDetails,
@@ -75,14 +96,16 @@ export const handleApiError = (error) => {
     };
   } else if (error.request) {
     // Request made but no response received (network error or server down)
+    console.error('Network error - no response received:', error.request);
     return {
-      message: 'Unable to connect to server. Using demo mode.',
+      message: 'Unable to connect to server. Please check your internet connection.',
       details: ['Network error', 'Server may be unavailable'],
       status: null,
       isNetworkError: true
     };
   } else {
     // Something else happened
+    console.error('Unexpected error:', error.message);
     return {
       message: error.message || 'An unexpected error occurred',
       details: [],

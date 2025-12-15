@@ -24,18 +24,35 @@ export const authService = {
   // Login user
   async login(credentials) {
     try {
+      if (import.meta.env.DEV) {
+        console.log('authService: making login request to', '/auth/login');
+        console.log('authService: credentials', { email: credentials.email });
+      }
       const response = await api.post('/auth/login', credentials);
+      if (import.meta.env.DEV) {
+        console.log('authService: received response', response);
+      }
       const data = handleApiResponse(response);
+      if (import.meta.env.DEV) {
+        console.log('authService: processed response data', data);
+      }
       
-      // Store token and user data
+      // Store token and user data (API returns token and user directly)
       if (data.token) {
+        if (import.meta.env.DEV) {
+          console.log('authService: storing token and user data');
+        }
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
       }
       
-      return { success: true, data };
+      return { success: true, data: { token: data.token, user: data.user } };
     } catch (error) {
+      console.error('authService: login error', error);
       const errorDetails = handleApiError(error);
+      if (import.meta.env.DEV) {
+        console.log('authService: processed error', errorDetails);
+      }
       return { success: false, error: errorDetails };
     }
   },

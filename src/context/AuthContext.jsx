@@ -34,16 +34,25 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (credentials) => {
+    if (import.meta.env.DEV) {
+      console.log('AuthContext: login called with', { email: credentials.email });
+    }
     setLoading(true);
     try {
       const result = await authService.login(credentials);
+      if (import.meta.env.DEV) {
+        console.log('AuthContext: authService.login result:', result);
+      }
       if (result.success) {
+        if (import.meta.env.DEV) {
+          console.log('AuthContext: setting user and authentication state');
+        }
         setUser(result.data.user);
         setIsAuthenticated(true);
       }
       return result;
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('AuthContext: Login error:', error);
       return { 
         success: false, 
         error: { 

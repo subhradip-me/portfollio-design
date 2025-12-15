@@ -37,6 +37,15 @@ export default defineConfig({
   base: '/',
   server: {
     port: 5173,
-    host: true
+    host: true,
+    // Proxy only for development - helps with CORS issues
+    proxy: {
+      '/api': {
+        target: 'https://portfollio-backend-2-85n5.onrender.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '/api')
+      }
+    }
   }
 })

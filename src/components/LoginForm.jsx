@@ -16,13 +16,24 @@ const LoginForm = () => {
     setError('');
     setIsLoading(true);
 
+    if (import.meta.env.DEV) {
+      console.log('Login attempt with credentials:', { email: credentials.email, password: '[HIDDEN]' });
+    }
+
     try {
       const result = await login(credentials);
+      if (import.meta.env.DEV) {
+        console.log('Login result:', result);
+      }
       
       if (result.success) {
+        if (import.meta.env.DEV) {
+          console.log('Login successful, redirecting to admin panel');
+        }
         // Redirect to admin panel
         window.location.href = '/admin';
       } else {
+        console.error('Login failed:', result.error);
         setError(result.error?.message || 'Invalid credentials');
       }
     } catch (err) {
