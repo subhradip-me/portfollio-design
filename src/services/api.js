@@ -12,13 +12,12 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
-// Only log in development
-if (import.meta.env.DEV) {
-  console.log('API Base URL configured as:', API_BASE_URL);
-  console.log('Development mode:', import.meta.env.DEV);
-} else {
-  // Log once in production for debugging
+// Log current domain and API URL for debugging
+if (import.meta.env.PROD) {
+  console.log('Production domain:', window.location.origin);
   console.log('Production API URL:', API_BASE_URL);
+} else {
+  console.log('Development API URL:', API_BASE_URL);
 }
 
 /**

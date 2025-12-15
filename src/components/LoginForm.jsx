@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useApi';
+import { authService } from '../services';
 
 const LoginForm = () => {
   const [credentials, setCredentials] = useState({
@@ -10,6 +11,20 @@ const LoginForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const { login } = useAuth();
+
+  // Test CORS and log domain on component mount
+  useEffect(() => {
+    if (import.meta.env.PROD) {
+      console.log('Current domain:', window.location.origin);
+      console.log('Testing CORS connectivity...');
+      authService.testCors().then(corsOk => {
+        console.log('CORS test result:', corsOk ? 'SUCCESS' : 'FAILED');
+        if (!corsOk) {
+          console.warn('CORS might be blocked. Backend needs to whitelist:', window.location.origin);
+        }
+      });
+    }
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
