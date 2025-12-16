@@ -18,6 +18,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 // Authentication and Admin components
 import Admin from "./components/Admin";
 import LoginForm from "./components/LoginForm";
+import AuthTest from "./components/AuthTest";
 
 /**
  * Main App Component
@@ -64,6 +65,12 @@ export default function App() {
             <>
               <SEOMetaTags />
               <LoginForm />
+            </>
+          } />
+          <Route path="/auth-test" element={
+            <>
+              <SEOMetaTags />
+              <AuthTest />
             </>
           } />
           

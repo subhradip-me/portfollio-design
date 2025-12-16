@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useApi';
 import { authService } from '../services';
+import { debugAuth } from '../utils/debugAuth';
 
 const LoginForm = () => {
   const [credentials, setCredentials] = useState({
@@ -15,7 +16,7 @@ const LoginForm = () => {
   // Test CORS and log domain on component mount
   useEffect(() => {
     if (import.meta.env.PROD) {
-      console.log('Current domain:', window.location.origin);
+      debugAuth.logEnvironment();
       console.log('Testing CORS connectivity...');
       authService.testCors().then(corsOk => {
         console.log('CORS test result:', corsOk ? 'SUCCESS' : 'FAILED');
@@ -36,6 +37,22 @@ const LoginForm = () => {
     }
 
     try {
+      // First try the direct API test in production
+      if (import.meta.env.PROD) {
+        console.log('🧪 Testing direct API login...');
+        const directResult = await debugAuth.testDirectLogin(credentials);
+        if (directResult.success) {
+          console.log('✅ Direct API login successful, storing credentials...');
+          localStorage.setItem('token', directResult.data.token);
+          localStorage.setItem('user', JSON.stringify(directResult.data.user));
+          window.location.href = '/admin';
+          return;
+        } else {
+          console.log('❌ Direct API login failed, trying through context...');
+        }
+      }
+
+      // Try through the auth context
       const result = await login(credentials);
       if (import.meta.env.DEV) {
         console.log('Login result:', result);
