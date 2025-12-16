@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../hooks/useApi';
-import { authService } from '../services';
-import { debugAuth } from '../utils/debugAuth';
 
 const LoginForm = () => {
   const [credentials, setCredentials] = useState({
@@ -13,59 +11,18 @@ const LoginForm = () => {
   
   const { login } = useAuth();
 
-  // Test CORS and log domain on component mount
-  useEffect(() => {
-    if (import.meta.env.PROD) {
-      debugAuth.logEnvironment();
-      console.log('Testing CORS connectivity...');
-      authService.testCors().then(corsOk => {
-        console.log('CORS test result:', corsOk ? 'SUCCESS' : 'FAILED');
-        if (!corsOk) {
-          console.warn('CORS might be blocked. Backend needs to whitelist:', window.location.origin);
-        }
-      });
-    }
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    if (import.meta.env.DEV) {
-      console.log('Login attempt with credentials:', { email: credentials.email, password: '[HIDDEN]' });
-    }
-
     try {
-      // First try the direct API test in production
-      if (import.meta.env.PROD) {
-        console.log('🧪 Testing direct API login...');
-        const directResult = await debugAuth.testDirectLogin(credentials);
-        if (directResult.success) {
-          console.log('✅ Direct API login successful, storing credentials...');
-          localStorage.setItem('token', directResult.data.token);
-          localStorage.setItem('user', JSON.stringify(directResult.data.user));
-          window.location.href = '/admin';
-          return;
-        } else {
-          console.log('❌ Direct API login failed, trying through context...');
-        }
-      }
-
-      // Try through the auth context
       const result = await login(credentials);
-      if (import.meta.env.DEV) {
-        console.log('Login result:', result);
-      }
       
       if (result.success) {
-        if (import.meta.env.DEV) {
-          console.log('Login successful, redirecting to admin panel');
-        }
         // Redirect to admin panel
         window.location.href = '/admin';
       } else {
-        console.error('Login failed:', result.error);
         setError(result.error?.message || 'Invalid credentials');
       }
     } catch (err) {

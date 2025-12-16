@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import Header from './Header'
 import { useProjects, useTestimonials, useAuth } from '../hooks/useApi'
 import LoginForm from './LoginForm'
-import { debugAuth } from '../utils/debugAuth'
 
 export default function Admin() {
   // Component state
@@ -21,13 +20,6 @@ export default function Admin() {
   const isAuthenticated = authState?.isAuthenticated ?? false
   const projects = projectsState?.projects || []
   const testimonials = testimonialsState?.testimonials || []
-
-  // Debug authentication state in production
-  useEffect(() => {
-    if (import.meta.env.PROD) {
-      debugAuth.logAuthState('Admin Component', authState);
-    }
-  }, [authState]);
   
   // Memoized API functions to prevent unnecessary re-renders
   const apiActions = useMemo(() => ({

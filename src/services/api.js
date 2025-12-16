@@ -12,14 +12,6 @@ const getApiBaseUrl = () => {
 
 const API_BASE_URL = getApiBaseUrl();
 
-// Log current domain and API URL for debugging
-if (import.meta.env.PROD) {
-  console.log('Production domain:', window.location.origin);
-  console.log('Production API URL:', API_BASE_URL);
-} else {
-  console.log('Development API URL:', API_BASE_URL);
-}
-
 /**
  * Main Axios instance for API calls
  * Includes automatic token handling and error processing
@@ -44,20 +36,9 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
-    // Log requests in production for debugging
-    if (import.meta.env.PROD) {
-      console.log('API Request:', {
-        method: config.method,
-        url: config.baseURL + config.url,
-        headers: { ...config.headers, Authorization: token ? '[PRESENT]' : '[MISSING]' }
-      });
-    }
-    
     return config;
   },
   (error) => {
-    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
@@ -67,28 +48,9 @@ api.interceptors.request.use(
  */
 api.interceptors.response.use(
   (response) => {
-    // Log successful responses in production
-    if (import.meta.env.PROD) {
-      console.log('API Response:', {
-        status: response.status,
-        url: response.config.url,
-        data: response.data
-      });
-    }
     return response;
   },
   (error) => {
-    // Enhanced error logging for production debugging
-    if (import.meta.env.PROD) {
-      console.error('API Error:', {
-        message: error.message,
-        status: error.response?.status,
-        url: error.config?.url,
-        responseData: error.response?.data,
-        headers: error.response?.headers
-      });
-    }
-    
     // Handle common errors
     if (error.response?.status === 401) {
       // Unauthorized - remove token and redirect to login
@@ -114,13 +76,10 @@ export const handleApiResponse = (response) => {
 
 // Helper function to handle API errors
 export const handleApiError = (error) => {
-  console.error('API Error details:', error);
-  
   if (error.response) {
     // Server responded with error status
     const errorMessage = error.response.data?.error || error.response.data?.message || 'Authentication failed';
     const errorDetails = error.response.data?.details || [];
-    console.error('Server error response:', error.response.data);
     return {
       message: errorMessage,
       details: errorDetails,
@@ -128,7 +87,6 @@ export const handleApiError = (error) => {
     };
   } else if (error.request) {
     // Request made but no response received (network error or server down)
-    console.error('Network error - no response received:', error.request);
     return {
       message: 'Unable to connect to server. Please check your internet connection.',
       details: ['Network error', 'Server may be unavailable'],
@@ -137,7 +95,6 @@ export const handleApiError = (error) => {
     };
   } else {
     // Something else happened
-    console.error('Unexpected error:', error.message);
     return {
       message: error.message || 'An unexpected error occurred',
       details: [],
