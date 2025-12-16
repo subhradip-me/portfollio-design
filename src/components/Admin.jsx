@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import Header from './Header'
 import { useProjects, useTestimonials, useAuth } from '../hooks/useApi'
 import LoginForm from './LoginForm'
@@ -20,6 +20,36 @@ export default function Admin() {
   const isAuthenticated = authState?.isAuthenticated ?? false
   const projects = projectsState?.projects || []
   const testimonials = testimonialsState?.testimonials || []
+  
+  // Initial data loading
+  useEffect(() => {
+    if (isAuthenticated && !authState?.loading) {
+      // Load initial data based on active tab
+      if (activeTab === 'projects' && projectsState?.fetchProjects) {
+        projectsState.fetchProjects({ status: 'all' });
+      }
+      if (activeTab === 'testimonials' && testimonialsState?.fetchTestimonials) {
+        // Try the main testimonials endpoint first, fallback to featured if it fails
+        testimonialsState.fetchTestimonials({ status: 'all' }).catch(() => {
+          testimonialsState.fetchFeaturedTestimonials?.();
+        });
+      }
+    }
+  }, [isAuthenticated, authState?.loading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Load data when tab changes
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (activeTab === 'projects' && projectsState?.fetchProjects) {
+        projectsState.fetchProjects({ status: 'all' });
+      } else if (activeTab === 'testimonials' && testimonialsState?.fetchTestimonials) {
+        // Try the main testimonials endpoint first, fallback to featured if it fails
+        testimonialsState.fetchTestimonials({ status: 'all' }).catch(() => {
+          testimonialsState.fetchFeaturedTestimonials?.();
+        });
+      }
+    }
+  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
   
   // Memoized API functions to prevent unnecessary re-renders
   const apiActions = useMemo(() => ({
@@ -99,18 +129,28 @@ export default function Admin() {
   // Event handlers
   const handleDeleteProject = async (id) => {
     if (window.confirm('Are you sure you want to delete this project?')) {
-      const result = await apiActions.deleteProject(id)
-      if (!result.success) {
-        console.error('Failed to delete project:', result.error)
+      try {
+        const result = await apiActions.deleteProject(id)
+        if (!result.success) {
+          alert('Failed to delete project: ' + (result.error?.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting project:', error);
+        alert('Failed to delete project. Please try again.');
       }
     }
   }
 
   const handleDeleteTestimonial = async (id) => {
     if (window.confirm('Are you sure you want to delete this testimonial?')) {
-      const result = await apiActions.deleteTestimonial(id)
-      if (!result.success) {
-        console.error('Failed to delete testimonial:', result.error)
+      try {
+        const result = await apiActions.deleteTestimonial(id)
+        if (!result.success) {
+          alert('Failed to delete testimonial: ' + (result.error?.message || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error deleting testimonial:', error);
+        alert('Failed to delete testimonial. Please try again.');
       }
     }
   }
@@ -129,11 +169,15 @@ export default function Admin() {
       
       if (result.success) {
         setShowProjectForm(false)
+        // Show success message
+        alert(editingProject ? 'Project updated successfully!' : 'Project created successfully!');
       } else {
         console.error('Failed to save project:', result.error)
+        alert('Failed to save project: ' + (result.error?.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error saving project:', error)
+      alert('Failed to save project. Please try again.');
     }
   }
 
@@ -156,11 +200,15 @@ export default function Admin() {
       
       if (result.success) {
         setShowTestimonialForm(false)
+        // Show success message
+        alert(editingTestimonial ? 'Testimonial updated successfully!' : 'Testimonial created successfully!');
       } else {
         console.error('Failed to save testimonial:', result.error)
+        alert('Failed to save testimonial: ' + (result.error?.message || 'Unknown error'));
       }
     } catch (error) {
       console.error('Error saving testimonial:', error)
+      alert('Failed to save testimonial. Please try again.');
     }
   }
 
@@ -669,6 +717,47 @@ export default function Admin() {
 
             {/* Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {/* Loading State */}
+              {(projectsState?.loading || testimonialsState?.loading) && (
+                <div className="col-span-full flex items-center justify-center py-16">
+                  <div className="text-center space-y-4">
+                    <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-900 rounded-full animate-spin mx-auto"></div>
+                    <p className="text-zinc-600 font-medium">Loading {activeTab}...</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Error State */}
+              {(projectsState?.error || testimonialsState?.error) && (
+                <div className="col-span-full bg-red-50 border border-red-200 rounded-3xl p-8 text-center">
+                  <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-red-900 mb-2">Error Loading Data</h3>
+                  <p className="text-red-700 mb-4">
+                    {activeTab === 'projects' ? projectsState?.error : 
+                     (testimonialsState?.error || 'Backend testimonials API issue. Using featured testimonials instead.')}
+                  </p>
+                  <button 
+                    onClick={() => {
+                      if (activeTab === 'projects' && projectsState?.fetchProjects) {
+                        projectsState.fetchProjects({ status: 'all' });
+                      } else if (activeTab === 'testimonials' && testimonialsState?.fetchFeaturedTestimonials) {
+                        testimonialsState.fetchFeaturedTestimonials();
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Try Again
+                  </button>
+                </div>
+              )}
+
+              {/* Content - Only show if not loading and no errors */}
+              {!projectsState?.loading && !testimonialsState?.loading && !projectsState?.error && !testimonialsState?.error && (
+                <>
               {activeTab === 'projects' ? (
                 <>
                   {/* Projects */}
@@ -851,6 +940,8 @@ export default function Admin() {
                     </div>
                   </button>
                 </>
+              )}
+              </>
               )}
             </div>
           </div>
