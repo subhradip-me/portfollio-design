@@ -223,13 +223,17 @@ export default function Admin() {
       title: '',
       subtitle: '',
       description: '',
+      category: 'Development',
       technologies: [],
       year: new Date().getFullYear(),
       featured: false,
+      status: 'published',
       thumbnailUrl: '',
       liveUrl: '',
       githubUrl: ''
     })
+
+    const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
 
     const handleSubmit = (e) => {
       e.preventDefault()
@@ -240,6 +244,7 @@ export default function Admin() {
       onSave({
         ...formData,
         technologies: techArray,
+        status: formData.status || 'published'
       })
     }
 
@@ -295,6 +300,88 @@ export default function Admin() {
                 className="w-full px-3 py-2 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:border-transparent bg-white text-zinc-900 placeholder-zinc-400"
                 placeholder="e.g., Full Stack Web App"
               />
+            </div>
+
+            {/* Category */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-zinc-700">Category</label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setCategoryDropdownOpen(!categoryDropdownOpen)}
+                  className="w-full px-4 py-3 border border-zinc-200/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-zinc-900/20 focus:border-zinc-900/30 bg-white/80 backdrop-blur-sm text-zinc-900 transition-all duration-300 hover:border-zinc-300 hover:bg-white shadow-sm text-left flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 rounded-xl bg-zinc-100 flex items-center justify-center text-sm">
+                      {formData.category === 'Development' ? '💻' : 
+                       formData.category === 'Design' ? '🎨' : 
+                       formData.category === 'Branding' ? '✨' : 
+                       formData.category === 'Mobile' ? '📱' : '📂'}
+                    </div>
+                    <span className="text-sm font-medium">{formData.category}</span>
+                  </div>
+                  <svg 
+                    className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${
+                      categoryDropdownOpen ? 'rotate-180' : ''
+                    }`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {/* Dropdown Options */}
+                {categoryDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white/90 border border-zinc-200/80 rounded-xl  z-50 overflow-hidden">
+                    {[
+                      { value: 'Development', icon: '💻', label: 'Development' },
+                      { value: 'Design', icon: '🎨', label: 'Design' },
+                      { value: 'Branding', icon: '✨', label: 'Branding' },
+                      { value: 'Mobile', icon: '📱', label: 'Mobile' }
+                    ].map((category) => (
+                      <button
+                        key={category.value}
+                        type="button"
+                        onClick={() => {
+                          setFormData({ ...formData, category: category.value })
+                          setCategoryDropdownOpen(false)
+                        }}
+                        className={`w-full px-4 py-3 text-left flex items-center space-x-3 transition-all duration-200 hover:bg-zinc-50 ${
+                          formData.category === category.value
+                            ? 'bg-zinc-900/5 text-zinc-900'
+                            : 'text-zinc-700 hover:text-zinc-900'
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-sm transition-colors duration-200 ${
+                          formData.category === category.value
+                            ? 'bg-zinc-900/10'
+                            : 'bg-zinc-100 hover:bg-zinc-200'
+                        }`}>
+                          {category.icon}
+                        </div>
+                        <span className="text-sm font-medium">{category.label}</span>
+                        {formData.category === category.value && (
+                          <div className="ml-auto w-3 h-3 bg-zinc-900 rounded-full flex items-center justify-center">
+                            <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Click outside to close */}
+                {categoryDropdownOpen && (
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setCategoryDropdownOpen(false)}
+                  />
+                )}
+              </div>
             </div>
 
             {/* Thumbnail URL */}
@@ -783,7 +870,20 @@ export default function Admin() {
                               <h3 className="text-lg font-semibold text-zinc-900 mb-1 group-hover:text-zinc-700 transition-colors">
                                 {project.title}
                               </h3>
-                              <p className="text-xs text-zinc-600 font-medium">{project.subtitle}</p>
+                              <div className="flex items-center space-x-2 mb-1">
+                                <p className="text-xs text-zinc-600 font-medium">{project.subtitle}</p>
+                                {project.category && (
+                                  <span className="inline-flex items-center space-x-1 text-xs text-zinc-600 bg-white/80 backdrop-blur-sm border border-zinc-200/60 px-2.5 py-1 rounded-full font-medium shadow-sm">
+                                    <span className="text-xs">
+                                      {project.category === 'Development' ? '💻' : 
+                                       project.category === 'Design' ? '🎨' : 
+                                       project.category === 'Branding' ? '✨' : 
+                                       project.category === 'Mobile' ? '📱' : '📂'}
+                                    </span>
+                                    <span>{project.category}</span>
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             <span className="text-xs text-zinc-400 font-mono bg-zinc-100 px-2 py-1 rounded">
                               {project.year}

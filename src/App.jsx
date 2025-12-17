@@ -2,14 +2,14 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Page components
-import AllWork from "./pages/AllWork";
+import Projects from "./pages/Projects";
 
 // Main portfolio components
 import Cursor from "./components/Cursor";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import About from "./components/About";
-import Projects from "./components/Projects";
+import FeaturedProjects from "./components/FeaturedProjects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import SEOMetaTags from "./components/SEOMetaTags";
@@ -38,7 +38,7 @@ export default function App() {
                 <Header />
                 <Hero />
                 <About />
-                <Projects />
+                <FeaturedProjects />
                 <Contact />
                 <Footer />
               </main>
@@ -46,10 +46,10 @@ export default function App() {
           />
           
           {/* Portfolio pages */}
-          <Route path="/all-projects" element={
+          <Route path="/projects" element={
             <>
               <SEOMetaTags />
-              <AllWork />
+              <Projects />
             </>
           } />
           

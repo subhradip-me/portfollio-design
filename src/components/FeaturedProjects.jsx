@@ -1,50 +1,91 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
+import { projectsService } from '../services/projectsService'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function Projects() {
+export default function FeaturedProjects() {
   const projectsRef = useRef(null)
   const titleRef = useRef(null)
   const numberRef = useRef(null)
   const projectRefs = useRef([])
+  
+  // State for projects from API
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const projects = [
-    {
-      id: '01',
-      title: 'E-Commerce Platform',
-      subtitle: 'Full Stack Development',
-      description: 'Modern e-commerce solution with React, Node.js, and AI-powered recommendations.',
-      tech: ['React', 'Node.js', 'MongoDB', 'Stripe'],
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop',
-      link: '#',
-      year: '2024'
-    },
-    {
-      id: '02',
-      title: 'Design System',
-      subtitle: 'UI/UX Design & Development',
-      description: 'Comprehensive design system with 200+ components and dark/light theme support.',
-      tech: ['Figma', 'React', 'Storybook', 'TypeScript'],
-      image: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop',
-      link: '#',
-      year: '2024'
-    },
-    {
-      id: '03',
-      title: 'Analytics Dashboard',
-      subtitle: 'Data Visualization',
-      description: 'Real-time analytics dashboard with interactive charts and performance metrics.',
-      tech: ['Next.js', 'D3.js', 'PostgreSQL', 'Redis'],
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
-      link: '#',
-      year: '2023'
+  // Fetch featured projects from API
+  useEffect(() => {
+    const fetchFeaturedProjects = async () => {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Try to fetch featured projects
+        const response = await projectsService.getProjects({ featured: true, limit: 3 })
+        
+        if (response.success && response.data?.projects) {
+          setProjects(response.data.projects)
+        } else {
+          // Fallback to regular projects if no featured projects
+          const fallbackResponse = await projectsService.getProjects({ limit: 3 })
+          if (fallbackResponse.success && fallbackResponse.data?.projects) {
+            setProjects(fallbackResponse.data.projects)
+          } else {
+            throw new Error('No projects found')
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching featured projects:', err)
+        setError(err.message)
+        // Use fallback static data if API fails
+        setProjects([
+          {
+            id: '01',
+            title: 'E-Commerce Platform',
+            subtitle: 'Full Stack Development',
+            description: 'Modern e-commerce solution with React, Node.js, and AI-powered recommendations.',
+            technologies: ['React', 'Node.js', 'MongoDB', 'Stripe'],
+            thumbnailUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop',
+            liveUrl: '#',
+            year: 2024
+          },
+          {
+            id: '02',
+            title: 'Design System',
+            subtitle: 'UI/UX Design & Development',
+            description: 'Comprehensive design system with 200+ components and dark/light theme support.',
+            technologies: ['Figma', 'React', 'Storybook', 'TypeScript'],
+            thumbnailUrl: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop',
+            liveUrl: '#',
+            year: 2024
+          },
+          {
+            id: '03',
+            title: 'Analytics Dashboard',
+            subtitle: 'Data Visualization',
+            description: 'Real-time analytics dashboard with interactive charts and performance metrics.',
+            technologies: ['Next.js', 'D3.js', 'PostgreSQL', 'Redis'],
+            thumbnailUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop',
+            liveUrl: '#',
+            year: 2023
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchFeaturedProjects()
+  }, [])
 
   useEffect(() => {
+    // Only run animations if projects are loaded
+    if (!projects.length || loading) return
+
     const ctx = gsap.context(() => {
       // Set initial states
       gsap.set(titleRef.current, { opacity: 0, y: 100 })
@@ -183,7 +224,7 @@ export default function Projects() {
     }, projectsRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [projects, loading]) // Re-run when projects are loaded
 
   const handleProjectHover = () => {
     // Future: Could add hover effects here
@@ -229,10 +270,40 @@ export default function Projects() {
           </h2>
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center space-y-8">
+              <div className="w-12 h-12 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin mx-auto"></div>
+              <div className="space-y-2">
+                <p className="text-zinc-600 font-medium">Loading featured projects...</p>
+                <p className="text-xs text-zinc-400 font-mono">Fetching from API</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && !loading && (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center space-y-8 max-w-md">
+              <div className="w-16 h-16 bg-zinc-100 rounded-2xl flex items-center justify-center mx-auto">
+                <svg className="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                <p className="text-zinc-700 font-medium">Unable to load projects</p>
+                <p className="text-xs text-zinc-500">Using fallback data instead</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Projects - Individual Wrappers */}
-        {projects.map((project, index) => (
+        {!loading && projects.map((project, index) => (
           <div
-            key={project.id}
+            key={project._id || project.id || index}
             ref={el => projectRefs.current[index] = el}
             className="min-h-screen flex items-center justify-center relative"
           >
@@ -255,10 +326,10 @@ export default function Projects() {
                     {/* Project Number */}
                     <div className="flex items-start justify-between">
                       <div className="text-6xl lg:text-8xl font-mono text-zinc-200 group-hover:text-zinc-300 transition-colors duration-700 leading-none">
-                        {project.id}
+                        {String(index + 1).padStart(2, '0')}
                       </div>
                       <div className="text-xs font-mono text-zinc-400 tracking-wider bg-zinc-100 px-3 py-1 rounded-full">
-                        {project.year}
+                        {project.year || new Date().getFullYear()}
                       </div>
                     </div>
 
@@ -281,7 +352,7 @@ export default function Projects() {
                     <div className="space-y-4">
                       <h4 className="text-xs font-mono text-zinc-400 tracking-[0.15em]">TECHNOLOGIES</h4>
                       <div className="flex flex-wrap gap-3">
-                        {project.tech.map((tech, techIndex) => (
+                        {(project.technologies || project.tech || []).map((tech, techIndex) => (
                           <span
                             key={techIndex}
                             className="tech-tag px-4 py-2 text-xs font-mono bg-zinc-100 text-zinc-700 border border-zinc-200 group-hover:bg-zinc-200 group-hover:border-zinc-300 transition-all duration-300"
@@ -295,8 +366,10 @@ export default function Projects() {
                     {/* Link */}
                     <div className="pt-6">
                       <a
-                        href={project.link}
+                        href={project.liveUrl || project.link || '#'}
                         className="inline-flex items-center space-x-3 text-sm font-mono text-zinc-600 group-hover:text-zinc-800 transition-colors duration-300 group/link"
+                        target={project.liveUrl ? "_blank" : "_self"}
+                        rel={project.liveUrl ? "noopener noreferrer" : undefined}
                       >
                         <span className="tracking-wide">EXPLORE PROJECT</span>
                         <div className="w-8 h-8 border border-zinc-300 rounded-full flex items-center justify-center group-hover/link:bg-zinc-900 group-hover/link:border-zinc-900 transition-all duration-300">
@@ -323,9 +396,12 @@ export default function Projects() {
                     <div className="relative group/image">
                       <div className="aspect-4/3 relative overflow-hidden bg-zinc-100 border border-zinc-200 group-hover:border-zinc-300 transition-all duration-700">
                         <img
-                          src={project.image}
+                          src={project.thumbnailUrl || project.image || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop'}
                           alt={project.title}
                           className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 filter grayscale group-hover:grayscale-0"
+                          onError={(e) => {
+                            e.target.src = 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&h=600&fit=crop'
+                          }}
                         />
                         
                         {/* Minimalist overlay */}
@@ -337,7 +413,7 @@ export default function Projects() {
 
                       {/* Floating project number */}
                       <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-zinc-900 text-zinc-50 flex items-center justify-center font-mono text-lg opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-                        {project.id}
+                        {String(index + 1).padStart(2, '0')}
                       </div>
                     </div>
                   </div>

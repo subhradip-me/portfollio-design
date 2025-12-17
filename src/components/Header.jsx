@@ -74,9 +74,9 @@ export default function Header() {
     if (item === 'Home') {
       // Navigate to home page
       navigate('/');
-    } else if (item === 'All Projects') {
-      // Navigate to all work page
-      navigate('/all-projects');
+    } else if (item === 'Projects') {
+      // Navigate to projects page
+      navigate('/projects');
     } else {
       // Scroll to section
       scrollToSection(item.toLowerCase());
@@ -180,7 +180,7 @@ export default function Header() {
           <div className="relative h-full" onClick={(e) => e.stopPropagation()}>
             {/* Navigation Links - Centered */}
             <nav className="flex flex-col items-center justify-center h-full space-y-1">
-              {['Home', 'About', 'Projects', 'All Projects', 'Contact'].map((item, index) => (
+              {['Home', 'About', 'Projects', 'Contact'].map((item, index) => (
                 <button
                   key={item}
                   onClick={() => handleNavClick(item)}

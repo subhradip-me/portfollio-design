@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+import { MdOutlineVerifiedUser } from "react-icons/md";
 
 gsap.registerPlugin(ScrollTrigger)
 
 export default function Hero() {
   const heroRef = useRef(null)
-  const imageRef = useRef(null)
   const titleRef = useRef(null)
   const subtitleRef = useRef(null)
   const descRef = useRef(null)
@@ -17,105 +18,55 @@ export default function Hero() {
   const methodRef = useRef(null)
   const importRef = useRef(null)
   const quoteRef = useRef(null)
-  const downloadBtnRef = useRef(null)
-  
-  const [showDownloadBtn, setShowDownloadBtn] = useState(false)
+  const cardContainerRef = useRef(null)
+  const card1Ref = useRef(null)
+  const card2Ref = useRef(null)
+  const card3Ref = useRef(null)
+  const card4Ref = useRef(null)
 
-  // Hover animation functions
-  const handleImageHover = () => {
-    setShowDownloadBtn(true)
-    
-    gsap.to(imageRef.current, {
+  // Card container hover functions
+  const handleCardHover = () => {
+    gsap.to(cardContainerRef.current, {
       scale: 1.05,
-      rotation: 3,
+      rotation: 2,
       duration: 0.8,
       ease: "power3.out"
     })
     
-    gsap.to(imageRef.current.querySelector('.floating-number'), {
-      scale: 1.2,
-      rotation: 360,
-      duration: 0.8,
-      ease: "back.out(1.7)"
-    })
-
-    // Animate the resume content sections
-    gsap.to(imageRef.current.querySelectorAll('h4'), {
-      color: '#18181b',
+    // Enhance card borders on hover
+    const cards = [card1Ref.current, card2Ref.current, card3Ref.current, card4Ref.current]
+    gsap.to(cards, {
+      borderColor: '#71717a',
       duration: 0.6,
       stagger: 0.1,
       ease: "power2.out"
     })
-
-    // Animate the skill dots and lines
-    gsap.to(imageRef.current.querySelectorAll('.h-px'), {
-      scaleX: 1.1,
-      duration: 0.6,
-      stagger: 0.05,
-      ease: "power2.out"
-    })
-
-    // Show download button with animation
-    if (downloadBtnRef.current) {
-      gsap.to(downloadBtnRef.current, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.6,
-        ease: "back.out(1.7)"
-      })
-    }
   }
 
-  const handleImageLeave = () => {
-    // Hide the button immediately when leaving resume
-    setShowDownloadBtn(false)
-    
-    gsap.to(imageRef.current, {
+  const handleCardLeave = () => {
+    gsap.to(cardContainerRef.current, {
       scale: 1,
       rotation: 0,
       duration: 0.8,
       ease: "power3.out"
     })
     
-    gsap.to(imageRef.current.querySelector('.floating-number'), {
-      scale: 1,
-      rotation: 0,
-      duration: 0.8,
-      ease: "back.out(1.7)"
-    })
-
-    // Reset resume content
-    gsap.to(imageRef.current.querySelectorAll('h4'), {
-      color: '#27272a',
+    // Reset card borders
+    const cards = [card1Ref.current, card2Ref.current, card3Ref.current, card4Ref.current]
+    gsap.to(cards, {
+      borderColor: '#e4e4e7',
       duration: 0.6,
       stagger: 0.05,
       ease: "power2.out"
     })
-
-    gsap.to(imageRef.current.querySelectorAll('.h-px'), {
-      scaleX: 1,
-      duration: 0.6,
-      stagger: 0.03,
-      ease: "power2.out"
-    })
-
-    // Hide download button with animation
-    if (downloadBtnRef.current) {
-      gsap.to(downloadBtnRef.current, {
-        opacity: 0,
-        scale: 0.9,
-        duration: 0.4,
-        ease: "power2.in"
-      })
-    }
   }
 
   // Floating code hover functions
   const handleCodeHover = (ref) => {
     gsap.to(ref.current, {
       scale: 1.05,
-      y: -5,
-      duration: 0.3,
+      y: -2,
+      duration: 1,
       ease: "power2.out"
     })
   }
@@ -124,7 +75,7 @@ export default function Hero() {
     gsap.to(ref.current, {
       scale: 1,
       y: 0,
-      duration: 0.3,
+      duration: 1,
       ease: "power2.out"
     })
   }
@@ -148,9 +99,9 @@ export default function Hero() {
       // Hero entrance animation
       const tl = gsap.timeline({ delay: 0.5 })
       
-      tl.from(imageRef.current, {
+      tl.from(cardContainerRef.current, {
         scale: 0,
-        rotatetion: -180,
+        rotation: -180,
         opacity: 0,
         duration: 1.2,
         ease: "power3.out"
@@ -196,15 +147,6 @@ export default function Hero() {
         ease: "back.out(1.7)"
       }, "-=0.3")
 
-      // Floating animation for image
-      gsap.to(imageRef.current, {
-        y: -20,
-        duration: 3,
-        repeat: -1,
-        yoyo: true,
-        ease: "power2.inOut"
-      })
-
       // Subtle floating animations for code elements
       gsap.to(floatingCodeRef.current, {
         y: -10,
@@ -230,7 +172,84 @@ export default function Hero() {
         ease: "sine.inOut"
       })
 
-      // ScrollTrigger animation for image
+      // Card shuffle animation
+      const cards = [card1Ref.current, card2Ref.current, card3Ref.current, card4Ref.current]
+      
+      // Set initial positions - stack cards on top of each other
+      gsap.set(cards, {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '100%',
+        height: '100%',
+        scale: 1,
+        y: 0,
+        x: 0,
+        xPercent: -50,
+        yPercent: -50,
+        opacity: 1
+      })
+
+      // Initial z-index setup
+      cards.forEach((card, index) => {
+        gsap.set(card, {
+          zIndex: cards.length - index,
+          opacity: index === 0 ? 1 : 0.3
+        })
+      })
+
+      // Professional minimalistic shuffle animation
+      const shuffleTimeline = gsap.timeline({ 
+        repeat: -1, 
+        repeatDelay: 1.5,
+        delay: 2
+      })
+
+      // Each card smoothly transitions
+      cards.forEach((card, index) => {
+        shuffleTimeline
+        // Fade out and scale down current top card
+        .to(card, {
+          opacity: 0,
+          scale: 0.98,
+          y: 5,
+          duration: 0.8,
+          ease: "power2.inOut"
+        }, index * 2)
+        // Send to back
+        .set(card, {
+          zIndex: 0,
+          y: 0
+        })
+        // Fade back in at the back with low opacity
+        .to(card, {
+          opacity: 0.3,
+          scale: 1,
+          duration: 0.6,
+          ease: "power2.out"
+        })
+        // Restore z-index for next cycle
+        .set(card, {
+          zIndex: cards.length - index
+        }, "+=0.2")
+        // Reveal next card (fade in)
+        .to(cards[(index + 1) % cards.length], {
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.inOut"
+        }, index * 2 + 0.4)
+      })
+
+      // Floating animation for card container
+      gsap.to(cardContainerRef.current, {
+        y: -15,
+        duration: 3,
+        repeat: -1,
+        yoyo: true,
+        ease: "power2.inOut"
+      })
+
+      // ScrollTrigger animation for cards
       ScrollTrigger.create({
         trigger: heroRef.current,
         start: "top top",
@@ -242,7 +261,7 @@ export default function Hero() {
           const scale = 1 + (progress * 0.3)
           const y = progress * -100
           
-          gsap.to(imageRef.current, {
+          gsap.to(cardContainerRef.current, {
             rotation: rotation,
             scale: scale,
             y: y,
@@ -252,8 +271,8 @@ export default function Hero() {
         }
       })
 
-      // Additional scroll-triggered parallax effect for the image
-      gsap.to(imageRef.current, {
+      // Additional scroll-triggered parallax effect
+      gsap.to(cardContainerRef.current, {
         yPercent: -50,
         ease: "none",
         scrollTrigger: {
@@ -286,107 +305,58 @@ export default function Hero() {
         <div className="absolute bottom-1/4 left-1/3 w-0.5 h-0.5 bg-zinc-300 rounded-full"></div>
       </div>
 
-      {/* Resume container with enhanced styling */}
+      {/* profile cover container with enhanced styling */}
       <div 
-        ref={imageRef}
-        className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[25vw] sm:w-[40vw] sm:h-[25vw] md:w-[35vw] md:h-[20vw] lg:w-[25vw] lg:h-[15vw] overflow-hidden group cursor-pointer'
-        onMouseEnter={handleImageHover}
-        onMouseLeave={handleImageLeave}
+        ref={cardContainerRef}
+        className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[55vw] h-[70vw] xs:w-[70vw] xs:h-[70vw] sm:w-[30vw] sm:h-[30vw] md:w-[25vw] md:h-[30vw] lg:w-[20vw] lg:h-[24vw] cursor-pointer'
+        style={{ perspective: '1000px' }}
+        onMouseEnter={handleCardHover}
+        onMouseLeave={handleCardLeave}
       >
-        <div className="relative w-full h-full rounded-lg shadow-lg bg-white border border-zinc-200/60">
-          {/* Resume Document */}
-          <div className="w-full h-full p-3 sm:p-4 md:p-5 flex flex-col justify-between rounded-lg text-xs">
-            
-            {/* Header */}
-            <div className="space-y-1">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="text-sm sm:text-base font-bold text-zinc-900 tracking-tight uppercase">SUBHRADIP HANSDA</h3>
-                  <p className="text-xs text-zinc-600 font-medium tracking-wide uppercase">Frontend-Focused Full-Stack</p>
-                </div>
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-zinc-100 rounded border ml-2"></div>
-              </div>
-              <div className="h-px bg-zinc-300 w-full"></div>
-            </div>
-
-            {/* Contact & Summary */}
-            <div className="flex-1 space-y-3">
-              
-              {/* Contact */}
-              <div className="space-y-1">
-                <h4 className="text-xs text-zinc-900 font-bold uppercase tracking-wide">Contact</h4>
-                <div className="space-y-0.5 text-xs text-zinc-700">
-                  <div>Phone: 9832634461</div>
-                  <div>Email: subhradip.info@gmail.com</div>
-                  <div>Address: Anukhal, Kalna, Purba Bardhaman</div>
-                </div>
-              </div>
-
-              {/* Professional Summary */}
-              <div className="space-y-1">
-                <h4 className="text-xs text-zinc-900 font-bold uppercase tracking-wide">Professional Summary</h4>
-                <p className="text-xs text-zinc-700 leading-relaxed">
-                  A frontend and full-stack developer with a strong focus on creating clean, responsive, and visually engaging interfaces using React, Tailwind, GSAP, and Framer Motion.
-                </p>
-              </div>
-
-              {/* Technical Skills */}
-              <div className="space-y-1">
-                <h4 className="text-xs text-zinc-900 font-bold uppercase tracking-wide">Technical Skills</h4>
-                <div className="grid grid-cols-2 gap-1 text-xs">
-                  <div className="space-y-0.5">
-                    <div className="font-semibold text-zinc-800">Frontend</div>
-                    <div className="text-zinc-600">HTML5, CSS3, JavaScript</div>
-                    <div className="text-zinc-600">React.js, Tailwind CSS</div>
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="font-semibold text-zinc-800">Backend</div>
-                    <div className="text-zinc-600">Node.js, Express.js</div>
-                    <div className="text-zinc-600">MongoDB, REST APIs</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Projects */}
-              <div className="space-y-1">
-                <h4 className="text-xs text-zinc-900 font-bold uppercase tracking-wide">Projects</h4>
-                <div className="space-y-1">
-                  <div className="flex justify-between items-start">
-                    <span className="text-xs text-zinc-800 font-medium">Portfolio Website</span>
-                    <span className="text-xs text-zinc-500">2024</span>
-                  </div>
-                  <div className="text-xs text-zinc-600">React, GSAP, Tailwind CSS</div>
-                  <div className="w-full h-px bg-zinc-200"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="space-y-1">
-              <div className="h-px bg-zinc-300 w-full"></div>
-              <div className="flex justify-between items-center">
-                <span className="text-xs text-zinc-500">Updated 2024</span>
-                <div className="flex space-x-1">
-                  <div className="w-1 h-1 bg-zinc-400 rounded-full"></div>
-                  <div className="w-1 h-1 bg-zinc-300 rounded-full"></div>
-                  <div className="w-1 h-1 bg-zinc-200 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Floating CV Badge */}
-          <div className="floating-number absolute -top-2 -right-2 sm:-top-4 sm:-right-4 w-6 h-6 sm:w-8 sm:h-8 bg-zinc-900 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-mono">
-            CV
-          </div>
-
-          {/* Paper texture overlay */}
-          <div className="absolute inset-0 bg-linear-to-br from-transparent via-zinc-100/30 to-zinc-200/40 rounded-lg pointer-events-none"></div>
+        <div 
+          ref={card1Ref}
+          className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
+        >
+          <img 
+            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            alt="Card 1" 
+            className='w-full h-full object-cover'
+          />
+        </div>
+        <div 
+          ref={card2Ref}
+          className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
+        >
+          <img 
+            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            alt="Card 2" 
+            className='w-full h-full object-cover'
+          />
+        </div>
+        <div 
+          ref={card3Ref}
+          className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
+        >
+          <img 
+            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            alt="Card 3" 
+            className='w-full h-full object-cover'
+          />
+        </div>
+        <div 
+          ref={card4Ref}
+          className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
+        >
+          <img 
+            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            alt="Card 4" 
+            className='w-full h-full object-cover'
+          />
         </div>
       </div>  
 
       {/* Text content with enhanced typography */}
-      <div className='relative z-10 text-center pointer-events-none px-4 sm:px-0'>
+      <div className='relative z-10 lg:mt-0 mt-52 text-center pointer-events-none px-4 sm:px-0'>
         <div className="relative">
           <h1 
             ref={titleRef}
@@ -394,12 +364,12 @@ export default function Hero() {
           >
             Imagination
             {/* Subtle text decoration */}
-            <div className="absolute -bottom-4 sm:-bottom-8 left-1/2 transform -translate-x-1/2 w-8 sm:w-16 h-px from-transparent via-zinc-500 to-transparent"></div>
+            <div className="absolute -bottom-16 sm:-bottom-16 left-1/2 transform -translate-x-1/2 w-8 sm:w-16 from-transparent via-zinc-500 to-transparent"></div>
           </h1>
           
           <h2 
             ref={subtitleRef}
-            className='absolute bottom-2 sm:bottom-4 md:bottom-8 lg:bottom-12 xl:bottom-16 right-0 sm:right-2 md:right-2 lg:right-3 text-5xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl 2xl:text-9xl text-zinc-800 font-light italic'
+            className='absolute  bottom-2 sm:bottom-4 md:bottom-8 lg:bottom-12 xl:bottom-16 right-0 sm:right-2 md:right-2 lg:right-3 text-5xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl 2xl:text-9xl text-zinc-800 font-light italic'
             style={{ fontFamily: 'Georgia, serif' }}
           >
             Realized
@@ -409,7 +379,7 @@ export default function Hero() {
         
         <p 
           ref={descRef}
-          className='text-zinc-600 text-sm sm:text-base md:text-lg font-light mt-4 sm:mt-6 max-w-xs sm:max-w-md mx-auto leading-relaxed tracking-wide px-2 sm:px-0'
+          className='text-zinc-600 text-sm sm:text-base md:text-lg font-light mt-72 sm:mt-36 max-w-xs sm:max-w-md mx-auto leading-relaxed tracking-wide px-2 sm:px-0'
         >
           Bringing your <span className="italic text-zinc-700">ideas</span> to life through 
           <br className="hidden sm:block" />
@@ -417,31 +387,8 @@ export default function Hero() {
         </p>
 
         {/* Download CV Button - appears over text content */}
-        <div 
-          ref={downloadBtnRef}
-          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto transition-all duration-500 z-30 ${
-            showDownloadBtn ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{ opacity: 0, transform: 'translate(-50%, -50%) scale(0.9)' }}
-        >
-          <button 
-            className="bg-zinc-900 text-white px-6 py-3 rounded-full text-sm font-mono tracking-wide hover:bg-zinc-800 transition-all duration-300 hover:scale-105 flex items-center space-x-3 shadow-xl backdrop-blur-sm border border-zinc-700/50"
-            onClick={() => {
-              // Create and trigger download
-              const link = document.createElement('a')
-              link.href = '/cv.pdf' // Replace with your CV file path
-              link.download = 'Subhradip_Hansda_CV.pdf'
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
-            }}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span>DOWNLOAD CV</span>
-          </button>
-        </div>
+        
+  
 
         {/* Scroll indicator */}
         <div className="absolute -bottom-50 sm:-bottom-30 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-1 sm:space-y-2 opacity-60">
@@ -545,7 +492,7 @@ export default function Hero() {
       {/* Floating method - clean (hidden on small mobile) */}
       <div 
         ref={methodRef}
-        className='absolute top-1/4 right-1/3 w-36 sm:w-44 md:w-52 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 hidden md:block opacity-0'
+        className='absolute top-1/6 right-1/3 w-36 sm:w-44 md:w-52 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 hidden md:block opacity-0'
         onMouseEnter={() => handleCodeHover(methodRef)}
         onMouseLeave={() => handleCodeLeave(methodRef)}
       >
