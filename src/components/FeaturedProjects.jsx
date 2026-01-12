@@ -320,7 +320,7 @@ export default function FeaturedProjects() {
                 onMouseEnter={handleProjectHover}
                 onMouseLeave={handleProjectLeave}
               >
-                <div className="mt-46 lg:mt-2 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+                <div className="mt-20 lg:mt-2 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
                   {/* Project Info */}
                   <div className={`project-content lg:col-span-6 ${index % 2 === 1 ? 'lg:order-2' : ''} space-y-6`}>
                     {/* Project Number */}
