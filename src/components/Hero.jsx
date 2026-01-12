@@ -194,7 +194,7 @@ export default function Hero() {
       cards.forEach((card, index) => {
         gsap.set(card, {
           zIndex: cards.length - index,
-          opacity: index === 0 ? 1 : 0.3
+          opacity: 1
         })
       })
 
@@ -221,9 +221,9 @@ export default function Hero() {
           zIndex: 0,
           y: 0
         })
-        // Fade back in at the back with low opacity
+        // Fade back in at the back with full opacity
         .to(card, {
-          opacity: 0.3,
+          opacity: 1,
           scale: 1,
           duration: 0.6,
           ease: "power2.out"
@@ -232,7 +232,7 @@ export default function Hero() {
         .set(card, {
           zIndex: cards.length - index
         }, "+=0.2")
-        // Reveal next card (fade in)
+        // Keep next card visible
         .to(cards[(index + 1) % cards.length], {
           opacity: 1,
           duration: 0.8,
@@ -318,7 +318,7 @@ export default function Hero() {
           className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
         >
           <img 
-            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            src="https://i.pinimg.com/736x/d9/84/b7/d984b7358e86e50a7f24d1c3f5448450.jpg" 
             alt="Card 1" 
             className='w-full h-full object-cover'
           />
@@ -328,7 +328,7 @@ export default function Hero() {
           className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
         >
           <img 
-            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            src="https://i.pinimg.com/736x/d9/84/b7/d984b7358e86e50a7f24d1c3f5448450.jpg" 
             alt="Card 2" 
             className='w-full h-full object-cover'
           />
@@ -338,7 +338,7 @@ export default function Hero() {
           className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
         >
           <img 
-            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            src="https://i.pinimg.com/736x/d9/84/b7/d984b7358e86e50a7f24d1c3f5448450.jpg" 
             alt="Card 3" 
             className='w-full h-full object-cover'
           />
@@ -348,7 +348,7 @@ export default function Hero() {
           className='bg-white rounded-lg overflow-hidden border border-zinc-200 shadow-lg'
         >
           <img 
-            src="https://i.pinimg.com/736x/f9/79/03/f97903fb8eae466e191059d89bf18dd0.jpg" 
+            src="https://i.pinimg.com/736x/d9/84/b7/d984b7358e86e50a7f24d1c3f5448450.jpg" 
             alt="Card 4" 
             className='w-full h-full object-cover'
           />
@@ -360,20 +360,28 @@ export default function Hero() {
         <div className="relative">
           <h1 
             ref={titleRef}
-            className='explora-regular text-[7.5rem] sm:text-[10rem] md:text-[15rem] lg:text-[20rem] xl:text-[15rem] 2xl:text-[25rem] font-light text-zinc-500 leading-none tracking-tight relative'
+            className='explora-regular text-[7.5rem] sm:text-[10rem] md:text-[15rem] lg:text-[20rem] xl:text-[15rem] 2xl:text-[25rem] font-light leading-none tracking-tight relative bg-gradient-to-br from-zinc-600 via-zinc-400 to-zinc-500 bg-clip-text text-transparent'
+            style={{
+              textShadow: '0 2px 10px rgba(0,0,0,0.05)',
+              filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.05))'
+            }}
           >
             Imagination
             {/* Subtle text decoration */}
-            <div className="absolute -bottom-16 sm:-bottom-16 left-1/2 transform -translate-x-1/2 w-8 sm:w-16 from-transparent via-zinc-500 to-transparent"></div>
+            <div className="absolute -bottom-16 sm:-bottom-16 left-1/2 transform -translate-x-1/2 w-8 sm:w-16 bg-gradient-to-r from-transparent via-zinc-400 to-transparent h-px opacity-50"></div>
           </h1>
           
           <h2 
             ref={subtitleRef}
-            className='absolute  bottom-2 sm:bottom-4 md:bottom-8 lg:bottom-12 xl:bottom-16 right-0 sm:right-2 md:right-2 lg:right-3 text-5xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl 2xl:text-9xl text-zinc-800 font-light italic'
-            style={{ fontFamily: 'Georgia, serif' }}
+            className='absolute bottom-2 sm:bottom-4 md:bottom-8 lg:bottom-12 xl:bottom-16 right-0 sm:right-2 md:right-2 lg:right-3 text-5xl sm:text-3xl md:text-4xl lg:text-6xl xl:text-8xl 2xl:text-9xl font-light italic bg-gradient-to-r from-zinc-700 via-zinc-800 to-zinc-700 bg-clip-text text-transparent'
+            style={{ 
+              fontFamily: 'Georgia, serif',
+              textShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.06))'
+            }}
           >
             Realized
-            <span className="absolute -top-8 sm:-top-2 -right-1 sm:-right-6 text-[0.6rem] sm:text-xs font-mono text-zinc-400 not-italic">EST. 2024</span>
+            <span className="absolute -top-8 sm:-top-2 -right-1 sm:-right-6 text-[0.6rem] sm:text-xs font-mono text-zinc-500 not-italic">EST. 2024</span>
           </h2>
         </div>
         
@@ -386,7 +394,7 @@ export default function Hero() {
           <span className="sm:hidden"> </span>design and technology.
         </p>
 
-        {/* Download CV Button - appears over text content */}
+       
         
   
 
@@ -435,7 +443,7 @@ export default function Hero() {
       {/* Floating arrow function - elegant */}
       <div 
         ref={arrowFuncRef}
-        className='absolute top-1/3 right-8 sm:right-16 lg:right-24 w-48 sm:w-56 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
+        className='absolute top-1/4 right-8 sm:right-16 lg:right-24 w-48 sm:w-56 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
         onMouseEnter={() => handleCodeHover(arrowFuncRef)}
         onMouseLeave={() => handleCodeLeave(arrowFuncRef)}
       >
@@ -469,7 +477,7 @@ export default function Hero() {
       {/* Floating class definition - modern (repositioned for mobile) */}
       <div 
         ref={classRef}
-        className='absolute bottom-8 sm:bottom-4 right-4 sm:right-12 lg:right-20 w-44 sm:w-52 md:w-60 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
+        className='absolute bottom-28 sm:bottom-4 left-4 sm:right-12 lg:right-20 w-44 sm:w-52 md:w-60 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
         onMouseEnter={() => handleCodeHover(classRef)}
         onMouseLeave={() => handleCodeLeave(classRef)}
       >
@@ -513,7 +521,7 @@ export default function Hero() {
       {/* Floating import statement - minimalist (repositioned) */}
       <div 
         ref={importRef}
-        className='absolute top-36 sm:top-40 md:top-48 left-1/4 w-28 sm:w-36 md:w-44 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
+        className='absolute top-48 sm:top-40 md:top-48 left-1/4 w-28 sm:w-36 md:w-44 p-2 sm:p-3 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
         onMouseEnter={() => handleCodeHover(importRef)}
         onMouseLeave={() => handleCodeLeave(importRef)}
       >
@@ -530,7 +538,7 @@ export default function Hero() {
       {/* Floating philosophy - typographic (mobile optimized) */}
       <div 
         ref={quoteRef}
-        className='absolute bottom-16 sm:bottom-24 md:bottom-32 right-4 sm:right-8 max-w-xs p-2 sm:p-3 md:p-4 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
+        className='absolute bottom-32 sm:bottom-24 md:bottom-32 right-4 sm:right-8 max-w-xs p-2 sm:p-3 md:p-4 cursor-pointer transition-all duration-300 hover:opacity-80 opacity-0'
         onMouseEnter={() => handleCodeHover(quoteRef)}
         onMouseLeave={() => handleCodeLeave(quoteRef)}
       >
