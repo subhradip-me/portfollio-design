@@ -262,7 +262,7 @@ export default function FeaturedProjects() {
             <div className="w-8 h-8 border-2 border-zinc-200 rotate-45"></div>
           </div>
           
-          <h2 ref={titleRef} className="text-5xl sm:text-6xl lg:text-8xl font-extralight text-zinc-900 leading-none tracking-tight">
+          <h2 ref={titleRef} className="text-5xl mb-24 lg:mb-2 sm:text-6xl lg:text-8xl font-extralight text-zinc-900 leading-none tracking-tight">
             Selected
             <span className="block text-zinc-400 italic font-light" style={{ fontFamily: 'Georgia, serif' }}>
               Projects
@@ -320,9 +320,9 @@ export default function FeaturedProjects() {
                 onMouseEnter={handleProjectHover}
                 onMouseLeave={handleProjectLeave}
               >
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                <div className="mt-46 lg:mt-2 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
                   {/* Project Info */}
-                  <div className={`project-content lg:col-span-6 ${index % 2 === 1 ? 'lg:order-2' : ''} space-y-8`}>
+                  <div className={`project-content lg:col-span-6 ${index % 2 === 1 ? 'lg:order-2' : ''} space-y-6`}>
                     {/* Project Number */}
                     <div className="flex items-start justify-between">
                       <div className="text-6xl lg:text-8xl font-mono text-zinc-200 group-hover:text-zinc-300 transition-colors duration-700 leading-none">
@@ -349,7 +349,7 @@ export default function FeaturedProjects() {
                     </p>
 
                     {/* Tech Stack */}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <h4 className="text-xs font-mono text-zinc-400 tracking-[0.15em]">TECHNOLOGIES</h4>
                       <div className="flex flex-wrap gap-3">
                         {(project.technologies || project.tech || []).map((tech, techIndex) => (
@@ -364,7 +364,7 @@ export default function FeaturedProjects() {
                     </div>
 
                     {/* Link */}
-                    <div className="pt-6">
+                    <div className="pt-5">
                       <a
                         href={project.liveUrl || project.link || '#'}
                         className="inline-flex items-center space-x-3 text-sm font-mono text-zinc-600 group-hover:text-zinc-800 transition-colors duration-300 group/link"
