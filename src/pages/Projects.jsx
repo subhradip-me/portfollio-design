@@ -1,12 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import Header from '../components/Header'
 import Footer from '../components/Footer'
 import { projectsService } from '../services/projectsService'
+import { SectionLoader } from '../components/LoadingSpinner'
 
 gsap.registerPlugin(ScrollTrigger)
+
+/**
+ * Image preload utility
+ */
+const preloadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(src)
+    img.onerror = reject
+    img.src = src
+  })
+}
 
 export default function Projects() {
   const containerRef = useRef(null)
@@ -20,6 +33,8 @@ export default function Projects() {
   const [error, setError] = useState(null)
   const [activeFilter, setActiveFilter] = useState('All')
   const [categories, setCategories] = useState(['All'])
+  const [imageLoaded, setImageLoaded] = useState({})
+  const [hoveredProject, setHoveredProject] = useState(null)
 
   // Fetch projects from API
   useEffect(() => {
@@ -308,11 +323,35 @@ export default function Projects() {
     return () => window.removeEventListener('mousemove', moveCursor)
   }, [])
 
-  const addToRefs = (el) => {
+  const addToRefs = useCallback((el) => {
     if (el && !projectsRef.current.includes(el)) {
       projectsRef.current.push(el)
     }
-  }
+  }, [])
+
+  // Preload images when projects are loaded
+  useEffect(() => {
+    if (!projects.length || loading) return
+    
+    const loadImages = async () => {
+      const loadPromises = projects.map(async (project, index) => {
+        const imageUrl = project.thumbnailUrl || project.image
+        if (imageUrl) {
+          try {
+            await preloadImage(imageUrl)
+            setImageLoaded(prev => ({ ...prev, [index]: true }))
+          } catch (err) {
+            console.warn(`Failed to preload image for project ${index}:`, err)
+            setImageLoaded(prev => ({ ...prev, [index]: 'error' }))
+          }
+        }
+      })
+      
+      await Promise.all(loadPromises)
+    }
+    
+    loadImages()
+  }, [projects, loading])
 
   const handleFilterChange = (category) => {
     setActiveFilter(category)
@@ -439,13 +478,7 @@ export default function Projects() {
         {/* Loading State */}
         {loading && (
           <section className="min-h-screen flex items-center justify-center">
-            <div className="text-center space-y-8">
-              <div className="w-16 h-16 border-2 border-zinc-200 border-t-zinc-900 rounded-full animate-spin mx-auto"></div>
-              <div className="space-y-2">
-                <p className="text-zinc-700 font-medium text-lg">Loading projects...</p>
-                <p className="text-xs text-zinc-500 font-mono">Fetching from database</p>
-              </div>
-            </div>
+            <SectionLoader text="Loading projects..." />
           </section>
         )}
 
@@ -484,29 +517,106 @@ export default function Projects() {
                       }`}>
                       
                       {/* Project Image */}
-                      <div className={`lg:col-span-7 ${index % 2 === 0 ? '' : 'lg:col-start-6'} relative overflow-hidden bg-zinc-100 group-hover:bg-zinc-200 transition-colors duration-700`}>
-                        <div className="aspect-5/3 lg:aspect-5/3 relative mt-4 lg:mt-8">
+                      <div 
+                        className={`lg:col-span-7 ${index % 2 === 0 ? '' : 'lg:col-start-6'} relative overflow-hidden bg-zinc-100`}
+                        onMouseEnter={() => setHoveredProject(index)}
+                        onMouseLeave={() => setHoveredProject(null)}
+                      >
+                        <div className="aspect-[5/3] relative">
+                          {/* Loading placeholder */}
+                          {!imageLoaded[index] && (
+                            <div className="absolute inset-0 bg-zinc-200 animate-pulse flex items-center justify-center">
+                              <div className="w-8 h-8 border-2 border-zinc-300 border-t-zinc-500 rounded-full animate-spin"></div>
+                            </div>
+                          )}
+                          
+                          {/* Main Image */}
                           <img
                             src={project.thumbnailUrl || project.image || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=800&fit=crop'}
                             alt={project.title}
-                            className="project-image w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700"
+                            loading="lazy"
+                            className={`
+                              project-image w-full h-full object-cover transition-all duration-700
+                              ${imageLoaded[index] ? 'opacity-100' : 'opacity-0'}
+                              ${hoveredProject === index ? 'scale-105 grayscale-0' : 'scale-100 grayscale'}
+                            `}
                             onError={(e) => {
                               e.target.src = 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1200&h=800&fit=crop'
+                              setImageLoaded(prev => ({ ...prev, [index]: true }))
                             }}
+                            onLoad={() => setImageLoaded(prev => ({ ...prev, [index]: true }))}
                           />
                           
-                          {/* Overlay */}
-                          <div className="absolute inset-0 bg-zinc-900/10 group-hover:bg-transparent transition-all duration-700" />
+                          {/* Gradient overlay on hover */}
+                          <div 
+                            className={`
+                              absolute inset-0 bg-gradient-to-t from-zinc-900/60 via-transparent to-transparent
+                              transition-opacity duration-500
+                              ${hoveredProject === index ? 'opacity-100' : 'opacity-0'}
+                            `}
+                          />
                           
-                          {/* Project Number */}
-                          <div className="project-number absolute top-6 left-6 text-white/90 font-mono text-sm tracking-wide">
+                          {/* Project Number - enhanced */}
+                          <div 
+                            className={`
+                              project-number absolute top-6 left-6 font-mono text-sm tracking-wide
+                              transition-all duration-300
+                              ${hoveredProject === index ? 'text-white' : 'text-white/90'}
+                            `}
+                          >
                             {String(index + 1).padStart(3, '0')}
                           </div>
                           
-                          {/* Featured Badge */}
+                          {/* Featured Badge - enhanced */}
                           {project.featured && (
-                            <div className="absolute top-6 right-6 w-2 h-2 bg-white rounded-full opacity-80" />
+                            <div 
+                              className={`
+                                absolute top-6 right-6 px-3 py-1 bg-white/90 text-zinc-900 
+                                font-mono text-xs tracking-wider
+                                transition-all duration-300
+                                ${hoveredProject === index ? 'opacity-100 translate-y-0' : 'opacity-80'}
+                              `}
+                            >
+                              FEATURED
+                            </div>
                           )}
+                          
+                          {/* Corner accents on hover */}
+                          <div 
+                            className={`
+                              absolute top-4 right-4 w-8 h-8
+                              transition-all duration-300
+                              ${hoveredProject === index ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}
+                            `}
+                          >
+                            <div className="w-full h-full border-t-2 border-r-2 border-white/80"></div>
+                          </div>
+                          
+                          <div 
+                            className={`
+                              absolute bottom-4 left-4 w-8 h-8
+                              transition-all duration-300
+                              ${hoveredProject === index ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}
+                            `}
+                          >
+                            <div className="w-full h-full border-b-2 border-l-2 border-white/80"></div>
+                          </div>
+                          
+                          {/* View Project text on hover */}
+                          <div 
+                            className={`
+                              absolute bottom-6 right-6
+                              transition-all duration-500
+                              ${hoveredProject === index ? 'opacity-100 translate-y-0' : 'opacity-100 translate-y-2'}
+                            `}
+                          >
+                            <span className="text-white text-xs font-mono tracking-wider flex items-center gap-2">
+                              VIEW PROJECT
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                              </svg>
+                            </span>
+                          </div>
                         </div>
                       </div>
 

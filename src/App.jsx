@@ -1,10 +1,8 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useScrollToTop } from "./hooks/useScrollToTop";
 
-// Page components
-import Projects from "./pages/Projects";
-
-// Main portfolio components
+// Eagerly loaded components (critical for initial render)
 import Cursor from "./components/Cursor";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -14,10 +12,21 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import SEOMetaTags from "./components/SEOMetaTags";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { PageLoader } from "./components/LoadingSpinner";
 
-// Authentication and Admin components
-import Admin from "./components/Admin";
-import LoginForm from "./components/LoginForm";
+// Lazy loaded components (code split for better performance)
+const Projects = lazy(() => import("./pages/Projects"));
+const Admin = lazy(() => import("./components/Admin"));
+const LoginForm = lazy(() => import("./components/LoginForm"));
+
+/**
+ * ScrollToTop Component
+ * Handles scrolling to top on route changes
+ */
+const ScrollToTop = () => {
+  useScrollToTop();
+  return null;
+};
 
 /**
  * Main App Component
@@ -27,6 +36,8 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Router>
+        <ScrollToTop />
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Main portfolio page - showcases all sections */}
           <Route 
@@ -86,6 +97,7 @@ export default function App() {
             </>
           } />
         </Routes>
+        </Suspense>
       </Router>
     </ErrorBoundary>
   );

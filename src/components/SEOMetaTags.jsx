@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 /**
  * SEO Meta Tags Component - Production Optimized for subhradip.me
@@ -15,7 +16,7 @@ export default function SEOMetaTags({
   title, 
   description, 
   image,
-  keywords = []
+  keywords
 }) {
   const location = useLocation();
   const currentPath = location.pathname;
@@ -56,7 +57,7 @@ export default function SEOMetaTags({
     const pageTitle = title || pageMeta.title;
     const pageDescription = description || pageMeta.description;
     const pageImage = image || '/og-image.jpg';
-    const pageKeywords = keywords.length > 0 ? keywords : pageMeta.keywords;
+    const pageKeywords = (keywords && keywords.length > 0) ? keywords : pageMeta.keywords;
     
     // Construct full URL for canonical and OG tags
     const canonicalUrl = `https://subhradip.me${currentPath}`;
@@ -203,3 +204,14 @@ export default function SEOMetaTags({
   // This component doesn't render anything
   return null;
 }
+
+SEOMetaTags.propTypes = {
+  title: PropTypes.string,
+  description: PropTypes.string,
+  image: PropTypes.string,
+  keywords: PropTypes.arrayOf(PropTypes.string)
+};
+
+SEOMetaTags.defaultProps = {
+  keywords: []
+};
